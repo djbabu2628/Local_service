@@ -2,8 +2,14 @@
 import sqlite3
 import os
 
+# Railway pe /app/database/ folder mein DB store hoga
+# Local pe bhi same kaam karega
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_PATH  = os.path.join(BASE_DIR, 'database', 'local_service.db')
+DB_DIR   = os.path.join(BASE_DIR, 'database')
+DB_PATH  = os.path.join(DB_DIR, 'local_service.db')
+
+# Ensure database folder exists (Railway pe zaruri hai)
+os.makedirs(DB_DIR, exist_ok=True)
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
