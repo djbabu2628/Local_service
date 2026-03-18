@@ -5,7 +5,7 @@
 // ✅ PRODUCTION URL — Railway backend
 // Isko apne Railway deploy hone ke baad milne wale URL se replace karo
 // Example: https://lses-backend-production.up.railway.app/api
-const API = "https://YOUR-RAILWAY-URL.up.railway.app/api";
+const API = "https://local-service-system-production.up.railway.app/api";
 
 function showToast(msg, type="success") {
   const c = document.getElementById("toast-container");

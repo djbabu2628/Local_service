@@ -4,7 +4,7 @@
    Auto-refresh every 10s, accept/complete jobs, stats
    ============================================================ */
 // ✅ PRODUCTION URL — apna Railway URL yahan daalo
-const API = 'https://YOUR-RAILWAY-URL.up.railway.app/api';
+const API = 'https://local-service-system-production.up.railway.app/api';
 
 let provider    = null;
 let activeJobId = null;

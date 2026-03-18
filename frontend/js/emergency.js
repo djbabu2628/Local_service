@@ -3,7 +3,7 @@
    Used by: emergency.html
    ============================================================ */
 // ✅ PRODUCTION URL — apna Railway URL yahan daalo
-const API = 'https://YOUR-RAILWAY-URL.up.railway.app/api';
+const API = 'https://local-service-system-production.up.railway.app/api';
 
 function showToast(msg, type = 'success') {
   const c = document.getElementById('toast-container');
