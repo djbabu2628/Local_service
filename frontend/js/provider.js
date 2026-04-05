@@ -3,8 +3,8 @@
    Used by: provider.html
    Auto-refresh every 10s, accept/complete jobs, stats
    ============================================================ */
-// ✅ PRODUCTION URL — apna Railway URL yahan daalo
-const API = 'https://local-service-system-production.up.railway.app/api';
+// ✅ LOCAL DEVELOPMENT — Flask backend running on localhost
+const API = 'http://localhost:5000/api';
 
 let provider    = null;
 let activeJobId = null;

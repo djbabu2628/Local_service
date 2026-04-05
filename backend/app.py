@@ -1,8 +1,8 @@
 """
 app.py — LSES Flask Main Server
+Runs on http://localhost:5000 (local development only)
 """
 
-import os
 from flask import Flask
 from flask_cors import CORS
 
@@ -15,20 +15,16 @@ from chatbot.chatbot  import chatbot_bp
 # ── Create App ───────────────────────────────────────────────
 app = Flask(__name__)
 
-# ── CORS Fix — sab origins allow karo ───────────────────────
+# ── CORS — allow all origins for local development ──────────
 CORS(app,
      origins="*",
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 )
 
-# Preflight OPTIONS request handle karo
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-    return response
+# NOTE: No @app.after_request needed — flask-cors handles all
+# CORS headers automatically. Adding manual headers causes
+# duplicate Access-Control-Allow-Origin which breaks browsers.
 
 # ── Register Blueprints ──────────────────────────────────────
 app.register_blueprint(auth_bp)
@@ -48,6 +44,5 @@ print("✅ Database ready.")
 
 # ── Entry Point ──────────────────────────────────────────────
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    print(f"🚀 Starting Flask server on port {port}")
-    app.run(host="0.0.0.0", port=port, debug=False)
+    print("🚀 Starting Flask server on http://localhost:5000")
+    app.run(host="127.0.0.1", port=5000, debug=True)

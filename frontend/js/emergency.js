@@ -2,8 +2,8 @@
    emergency.js  —  Emergency request form + tracking logic
    Used by: emergency.html
    ============================================================ */
-// ✅ PRODUCTION URL — apna Railway URL yahan daalo
-const API = 'https://local-service-system-production.up.railway.app/api';
+// ✅ LOCAL DEVELOPMENT — Flask backend running on localhost
+const API = 'http://localhost:5000/api';
 
 function showToast(msg, type = 'success') {
   const c = document.getElementById('toast-container');

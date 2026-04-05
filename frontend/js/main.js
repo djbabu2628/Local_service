@@ -2,10 +2,8 @@
    main.js  —  User-side auth logic (index.html)
    ============================================================ */
 
-// ✅ PRODUCTION URL — Railway backend
-// Isko apne Railway deploy hone ke baad milne wale URL se replace karo
-// Example: https://lses-backend-production.up.railway.app/api
-const API = "https://local-service-system-production.up.railway.app/api";
+// ✅ LOCAL DEVELOPMENT — Flask backend running on localhost
+const API = "http://localhost:5000/api";
 
 function showToast(msg, type="success") {
   const c = document.getElementById("toast-container");

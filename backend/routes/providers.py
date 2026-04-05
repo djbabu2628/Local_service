@@ -3,6 +3,12 @@ routes/providers.py — Provider Routes
 POST /api/provider/register
 POST /api/provider/login
 GET  /api/provider/stats/<id>
+
+⚠️ SECURITY NOTE:
+Passwords are hashed with plain SHA-256 (no salt). This is acceptable
+for localhost development but NOT safe for production. For production,
+replace hash_pw() with werkzeug.security.generate_password_hash() and
+check_password_hash() which use PBKDF2 with a random salt.
 """
 
 import hashlib
@@ -12,6 +18,7 @@ from database.db import get_db
 providers_bp = Blueprint('providers', __name__)
 
 
+# ⚠️ Plain SHA-256 — upgrade to werkzeug.security.generate_password_hash for production
 def hash_pw(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 

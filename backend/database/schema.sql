@@ -1,40 +1,39 @@
 -- ============================================================
---  LSES — MySQL Schema (use this if you prefer MySQL over SQLite)
---  For SQLite: tables are auto-created by db.py
+--  LSES — SQLite Schema
+--  Tables are also auto-created by db.py at startup.
+--  This file serves as the canonical reference for the schema.
 -- ============================================================
-CREATE DATABASE IF NOT EXISTS local_service_emergency;
-USE local_service_emergency;
 
 CREATE TABLE IF NOT EXISTS users (
-    id         INT AUTO_INCREMENT PRIMARY KEY,
-    name       VARCHAR(100) NOT NULL,
-    email      VARCHAR(150) NOT NULL UNIQUE,
-    password   VARCHAR(64)  NOT NULL,
-    created_at TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       TEXT NOT NULL,
+    email      TEXT NOT NULL UNIQUE,
+    password   TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now','localtime'))
 );
 
 CREATE TABLE IF NOT EXISTS providers (
-    id           INT AUTO_INCREMENT PRIMARY KEY,
-    name         VARCHAR(100) NOT NULL,
-    email        VARCHAR(150) NOT NULL UNIQUE,
-    phone        VARCHAR(20)  NOT NULL,
-    password     VARCHAR(64)  NOT NULL,
-    service_type VARCHAR(50)  NOT NULL,
-    availability ENUM('AVAILABLE','BUSY') DEFAULT 'AVAILABLE',
-    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    name         TEXT NOT NULL,
+    email        TEXT NOT NULL UNIQUE,
+    phone        TEXT NOT NULL,
+    password     TEXT NOT NULL,
+    service_type TEXT NOT NULL,
+    availability TEXT DEFAULT 'AVAILABLE',
+    created_at   TEXT DEFAULT (datetime('now','localtime'))
 );
 
 CREATE TABLE IF NOT EXISTS service_requests (
-    id            INT AUTO_INCREMENT PRIMARY KEY,
-    user_id       INT          NOT NULL,
-    customer_name VARCHAR(100) NOT NULL,
-    phone         VARCHAR(20)  NOT NULL,
-    service_type  VARCHAR(50)  NOT NULL,
-    description   TEXT         NOT NULL,
-    status        ENUM('PENDING','ASSIGNED','COMPLETED') DEFAULT 'PENDING',
-    provider_id   INT          DEFAULT NULL,
-    created_at    TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-    completed_at  TIMESTAMP    DEFAULT NULL,
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id       INTEGER NOT NULL,
+    customer_name TEXT NOT NULL,
+    phone         TEXT NOT NULL,
+    service_type  TEXT NOT NULL,
+    description   TEXT NOT NULL,
+    status        TEXT DEFAULT 'PENDING',
+    provider_id   INTEGER DEFAULT NULL,
+    created_at    TEXT DEFAULT (datetime('now','localtime')),
+    completed_at  TEXT DEFAULT NULL,
     FOREIGN KEY (user_id)     REFERENCES users(id)     ON DELETE CASCADE,
     FOREIGN KEY (provider_id) REFERENCES providers(id) ON DELETE SET NULL
 );
