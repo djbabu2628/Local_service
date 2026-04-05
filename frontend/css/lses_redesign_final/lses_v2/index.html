@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="noir">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LSES — Local Service Emergency System</title>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- Animated background blobs -->
+<div class="bg-art">
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
+</div>
+
+<div id="toast-container"></div>
+
+<!-- ── FLOATING PILL NAVBAR ── -->
+<div class="nav-wrapper">
+  <nav class="navbar">
+    <a href="index.html" class="logo">LS<span>E</span>S</a>
+    <div class="nav-links">
+      <a href="#how" class="nav-link">How It Works</a>
+      <a href="provider.html" class="nav-btn">Provider Portal →</a>
+    </div>
+  </nav>
+</div>
+
+<!-- ── HERO SECTION ── -->
+<section class="hero">
+
+  <!-- Left: Main Content -->
+  <div class="hero-left">
+    <div class="live-badge">
+      <span class="live-badge-dot"></span>
+      Live Emergency Dispatch
+    </div>
+
+    <h1 class="hero-h1">
+      URGENT
+      <span class="acc">HELP</span>
+      NOW.
+    </h1>
+
+    <p class="hero-sub">
+      Connect instantly with verified local technicians.
+      Plumbers, electricians, mechanics &amp; more —
+      emergency help in minutes, not hours.
+    </p>
+
+    <!-- Service Chips -->
+    <div class="service-chips">
+      <div class="svc-chip"><span>🔧</span> Plumber</div>
+      <div class="svc-chip"><span>⚡</span> Electrician</div>
+      <div class="svc-chip"><span>🔩</span> Mechanic</div>
+      <div class="svc-chip"><span>❄️</span> AC Repair</div>
+      <div class="svc-chip"><span>🚪</span> Carpenter</div>
+      <div class="svc-chip"><span>🏠</span> Handyman</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="hero-stats">
+      <div class="hstat">
+        <span class="hstat-num">24/7</span>
+        <span class="hstat-lbl">Support</span>
+      </div>
+      <div class="hstat">
+        <span class="hstat-num">&lt;5min</span>
+        <span class="hstat-lbl">Response</span>
+      </div>
+      <div class="hstat">
+        <span class="hstat-num">100%</span>
+        <span class="hstat-lbl">Verified</span>
+      </div>
+      <div class="hstat">
+        <span class="hstat-num">6+</span>
+        <span class="hstat-lbl">Services</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Auth Panel -->
+  <div class="auth-panel orange-card">
+    <div class="auth-label">Get Started</div>
+    <div class="auth-sublabel">Sign in or create your free account</div>
+
+    <div class="tabs">
+      <button class="tab active orange-tab" onclick="switchTab('login')">Sign In</button>
+      <button class="tab orange-tab" onclick="switchTab('register')">Create Account</button>
+    </div>
+
+    <!-- Login -->
+    <div class="tab-panel active" id="panel-login">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="Enter your password"/>
+      </div>
+      <button class="btn btn-orange btn-full btn-lg" id="btn-login" onclick="doLogin()">
+        Sign In →
+      </button>
+      <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted);">
+        No account?
+        <a href="#" onclick="switchTab('register')" style="color:var(--accent);text-decoration:none;font-weight:700;">
+          Create one →
+        </a>
+      </p>
+    </div>
+
+    <!-- Register -->
+    <div class="tab-panel" id="panel-register">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="reg-name" placeholder="Your full name"/>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="Minimum 6 characters"/>
+      </div>
+      <button class="btn btn-orange btn-full btn-lg" id="btn-register" onclick="doRegister()">
+        Create Account →
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ── CHATBOT ── -->
+<button id="chat-fab" onclick="toggleChat()" title="Chat with ServiceBot">💬</button>
+<div id="chat-window">
+  <div class="chat-header">
+    <div class="chat-header-title">🤖 ServiceBot</div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chat-input" placeholder="Ask me anything…"/>
+    <button class="chat-send" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<script src="js/theme.js"></script>
+<script src="js/main.js"></script>
+<script src="js/chatbot.js"></script>
+</body>
+</html>

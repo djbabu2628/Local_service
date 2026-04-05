@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Provider Portal — LSES</title>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- ── LIQUID GLASS ANIMATED BACKGROUND ── -->
+<div class="lg-bg">
+  <div class="orb orb-1" style="background:radial-gradient(circle,#4B8DFF 0%,transparent 70%);top:-200px;right:-150px;left:auto;animation-name:floatOrb2;"></div>
+  <div class="orb orb-2" style="background:radial-gradient(circle,#9D6BFF 0%,transparent 70%);top:-100px;left:-100px;"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+</div>
+
+<div id="toast-container"></div>
+
+<!-- NAV -->
+<nav class="navbar" id="nav-bar">
+  <a href="index.html" class="logo">LS<span>E</span>S</a>
+  <div class="nav-links" id="nav-right">
+    <a href="index.html" class="nav-link">User Portal</a>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════
+     PROVIDER LOGIN / REGISTER
+═════════════════════════════════════ -->
+<div class="provider-login-wrapper" id="provider-auth">
+  <div class="provider-logo-title">
+    <a href="index.html" class="logo" style="font-size:32px;">LS<span>E</span>S</a>
+    <h2>Service Provider Portal</h2>
+  </div>
+
+  <div class="auth-card blue-card">
+    <div class="tabs">
+      <button class="tab active blue-tab" onclick="switchProviderTab('login')">Sign In</button>
+      <button class="tab blue-tab" onclick="switchProviderTab('register')">Register as Provider</button>
+    </div>
+
+    <!-- Login Panel -->
+    <div class="tab-panel active" id="ppanel-login">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="p-login-email" class="blue-focus" placeholder="your@email.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="p-login-password" placeholder="Enter password"/>
+      </div>
+      <button class="btn btn-blue btn-full btn-lg" id="btn-p-login" onclick="doProviderLogin()">
+        Sign In to Dashboard →
+      </button>
+    </div>
+
+    <!-- Register Panel -->
+    <div class="tab-panel" id="ppanel-register">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="p-reg-name" class="blue-focus" placeholder="Your name"/>
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" id="p-reg-phone" class="blue-focus" placeholder="10 digits" maxlength="10"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="p-reg-email" class="blue-focus" placeholder="your@email.com"/>
+      </div>
+      <div class="form-group">
+        <label>Your Service Specialisation</label>
+        <select id="p-reg-service" class="blue-focus">
+          <option value="">— Select your service —</option>
+          <option value="Plumber">🔧 Plumber</option>
+          <option value="Electrician">⚡ Electrician</option>
+          <option value="Mechanic">🔩 Mechanic</option>
+          <option value="AC Repair">❄️ AC Repair</option>
+          <option value="Carpenter">🚪 Carpenter</option>
+          <option value="Handyman">🏠 Handyman</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="p-reg-password" placeholder="Minimum 6 characters"/>
+      </div>
+      <button class="btn btn-blue btn-full btn-lg" id="btn-p-register" onclick="doProviderRegister()">
+        Create Provider Account →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     PROVIDER DASHBOARD
+═════════════════════════════════════ -->
+<div id="provider-dashboard">
+
+  <!-- Refresh Bar -->
+  <div class="refresh-bar">
+    <div class="refresh-pulse"></div>
+    <span>Live — auto-refreshing every</span>
+    <span id="countdown">10</span>
+    <span>seconds</span>
+    <span style="margin-left:auto;cursor:pointer;color:var(--blue2);font-weight:600;" onclick="refreshAll()">↻ Refresh Now</span>
+  </div>
+
+  <div class="page">
+
+    <!-- Stats Row -->
+    <div class="grid-4" style="margin-bottom:32px;">
+      <div class="stat-card s-green">
+        <div class="stat-icon">✅</div>
+        <div class="stat-num green" id="stat-completed">0</div>
+        <div class="stat-label">Completed Jobs</div>
+      </div>
+      <div class="stat-card s-orange">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-num orange" id="stat-active">0</div>
+        <div class="stat-label">Active Jobs</div>
+      </div>
+      <div class="stat-card s-blue">
+        <div class="stat-icon">📋</div>
+        <div class="stat-num blue" id="stat-pending">0</div>
+        <div class="stat-label">Available Requests</div>
+      </div>
+      <div class="stat-card s-yellow">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-num yellow" id="stat-service" style="font-size:18px;padding-top:6px;">—</div>
+        <div class="stat-label">Your Speciality</div>
+      </div>
+    </div>
+
+    <!-- Active Job Section -->
+    <div id="active-job-section" style="display:none;margin-bottom:30px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+        <div class="page-title blue-accent" style="font-size:26px;">🔥 Active <span>Job</span></div>
+      </div>
+      <div class="active-job-card">
+        <div class="aj-header">
+          <div>
+            <div class="aj-title">Current Assignment</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:3px;">Job <span id="aj-id">#—</span> · Started <span id="aj-time">—</span></div>
+          </div>
+          <div class="aj-badge">IN PROGRESS</div>
+        </div>
+        <div class="aj-info-grid">
+          <div class="aj-info-item">
+            <div class="aj-info-lbl">Customer</div>
+            <div class="aj-info-val" id="aj-name">—</div>
+          </div>
+          <div class="aj-info-item">
+            <div class="aj-info-lbl">Phone</div>
+            <div class="aj-info-val" id="aj-phone">—</div>
+          </div>
+          <div class="aj-info-item">
+            <div class="aj-info-lbl">Service</div>
+            <div class="aj-info-val" id="aj-service">—</div>
+          </div>
+        </div>
+        <div class="aj-desc" id="aj-desc">—</div>
+        <button class="btn btn-green btn-lg" id="btn-complete" onclick="completeJob()">
+          ✅ Mark as Completed
+        </button>
+      </div>
+    </div>
+
+    <!-- Job Board -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div class="page-title blue-accent" style="font-size:26px;">📋 Available <span>Jobs</span></div>
+      <div style="background:rgba(75,141,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(75,141,255,0.3);color:var(--blue2);padding:6px 16px;border-radius:100px;font-size:13px;font-weight:700;" id="jobs-count">0 jobs</div>
+    </div>
+    <div class="grid-auto" id="jobs-grid">
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-title">Loading available jobs…</div>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+</div><!-- /provider-dashboard -->
+
+<!-- CHATBOT -->
+<button id="chat-fab" onclick="toggleChat()" title="Chat with ServiceBot">💬</button>
+<div id="chat-window">
+  <div class="chat-header">
+    <div class="chat-header-title">🤖 ServiceBot</div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chat-input" placeholder="Ask me anything…"/>
+    <button class="chat-send" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<script src="js/provider.js"></script>
+<script src="js/chatbot.js"></script>
+
+<script>
+/* Provider auth logic */
+const PAPI = 'http://localhost:5000/api';
+
+function switchProviderTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1));
+  });
+  document.getElementById('ppanel-login').classList.toggle('active', tab==='login');
+  document.getElementById('ppanel-register').classList.toggle('active', tab==='register');
+}
+
+function showProviderDashboard(prov) {
+  document.getElementById('provider-auth').style.display = 'none';
+  document.getElementById('provider-dashboard').style.display = 'block';
+  document.getElementById('nav-right').innerHTML = `
+    <div class="user-chip">
+      <div class="user-avatar blue-av" id="prov-avatar">${prov.name[0].toUpperCase()}</div>
+      <div class="avail-dot" id="avail-dot"></div>
+      <span class="avail-label" id="avail-label">AVAILABLE</span>
+      <span style="color:var(--muted);font-size:13px;" id="prov-name">${prov.name}</span>
+      <button class="logout-btn" onclick="logout()">Sign out</button>
+    </div>`;
+}
+
+async function doProviderLogin() {
+  const email    = document.getElementById('p-login-email').value.trim();
+  const password = document.getElementById('p-login-password').value;
+  if (!email||!password) return showToast('Please fill all fields','error');
+  const btn = document.getElementById('btn-p-login');
+  btn.disabled=true; btn.textContent='Signing in…';
+  try {
+    const res  = await fetch(PAPI+'/provider/login', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const data = await res.json();
+    if (data.success) {
+      localStorage.setItem('lses_provider', JSON.stringify(data.provider));
+      showToast('Welcome, '+data.provider.name+'! Loading dashboard…');
+      setTimeout(()=>{ showProviderDashboard(data.provider); initDashboard(); }, 600);
+    } else showToast(data.message,'error');
+  } catch { showToast('Cannot connect to server. Is Flask running?','error'); }
+  finally { btn.disabled=false; btn.textContent='Sign In to Dashboard →'; }
+}
+
+async function doProviderRegister() {
+  const name    = document.getElementById('p-reg-name').value.trim();
+  const phone   = document.getElementById('p-reg-phone').value.trim();
+  const email   = document.getElementById('p-reg-email').value.trim();
+  const service = document.getElementById('p-reg-service').value;
+  const pass    = document.getElementById('p-reg-password').value;
+  if (!name||!phone||!email||!service||!pass) return showToast('All fields are required','error');
+  const btn = document.getElementById('btn-p-register');
+  btn.disabled=true; btn.textContent='Registering…';
+  try {
+    const res  = await fetch(PAPI+'/provider/register', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,phone,email,service_type:service,password:pass})});
+    const data = await res.json();
+    if (data.success) { showToast('Account created! Please sign in.'); setTimeout(()=>switchProviderTab('login'),1000); }
+    else showToast(data.message,'error');
+  } catch { showToast('Cannot connect to server. Is Flask running?','error'); }
+  finally { btn.disabled=false; btn.textContent='Create Provider Account →'; }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const raw = localStorage.getItem('lses_provider');
+  if (raw) { showProviderDashboard(JSON.parse(raw)); initDashboard(); }
+});
+
+function showToast(msg, type='success') {
+  const c = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className='toast '+type;
+  const icons={success:'✓',error:'✕',info:'ℹ'};
+  el.innerHTML='<span class="toast-icon">'+(icons[type]||'✓')+'</span><span>'+msg+'</span>';
+  c.appendChild(el);
+  setTimeout(()=>{el.style.animation='slideIn .3s ease reverse';setTimeout(()=>el.remove(),280);},3500);
+}
+</script>
+</body>
+</html>

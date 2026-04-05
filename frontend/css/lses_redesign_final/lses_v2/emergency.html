@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="noir">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Emergency Request — LSES</title>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- Animated background blobs -->
+<div class="bg-art">
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
+</div>
+
+<div id="toast-container"></div>
+
+<!-- ── FLOATING PILL NAVBAR ── -->
+<div class="nav-wrapper">
+  <nav class="navbar">
+    <a href="index.html" class="logo">LS<span>E</span>S</a>
+    <div class="nav-links">
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <span id="user-name-display">User</span>
+        <button class="logout-btn" onclick="logout()">Sign out</button>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-title">Emergency <span>Dashboard</span></div>
+    <div class="page-sub">Submit a new service request or track your existing one in real-time.</div>
+  </div>
+
+  <div class="grid-2">
+
+    <!-- Raise Request -->
+    <div class="card">
+      <div class="card-title">
+        <div class="card-icon">🚨</div>
+        Raise Emergency Request
+      </div>
+
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="req-name" placeholder="Full name"/>
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="req-phone" placeholder="10-digit mobile number" maxlength="10"/>
+      </div>
+      <div class="form-group">
+        <label>Service Type</label>
+        <select id="req-service">
+          <option value="">— Select service needed —</option>
+          <option value="Plumber">🔧 Plumber</option>
+          <option value="Electrician">⚡ Electrician</option>
+          <option value="Mechanic">🔩 Mechanic</option>
+          <option value="AC Repair">❄️ AC Repair</option>
+          <option value="Carpenter">🚪 Carpenter</option>
+          <option value="Handyman">🏠 Handyman</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Problem Description</label>
+        <textarea id="req-desc" placeholder="Briefly describe the issue — e.g. water pipe burst in kitchen…"></textarea>
+      </div>
+      <button class="btn btn-orange btn-full btn-lg" id="btn-submit" onclick="submitRequest()">
+        🚨 Submit Emergency Request
+      </button>
+
+      <div style="margin-top:16px;padding:13px 16px;background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.18);border-radius:12px;font-size:13px;color:#fbbf24;">
+        ⚠️ One active request allowed at a time.
+      </div>
+    </div>
+
+    <!-- Track Request -->
+    <div class="card blue-top">
+      <div class="card-title">
+        <div class="card-icon blue-icon">📍</div>
+        Track Your Request
+      </div>
+
+      <p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.7;">
+        Enter your registered phone number to see the live status of your latest request.
+      </p>
+
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="track-phone" class="blue-focus" placeholder="Your 10-digit number" maxlength="10"/>
+      </div>
+      <button class="btn btn-ghost blue-ghost btn-full btn-lg" id="btn-track" onclick="trackRequest()">
+        🔍 Track Status
+      </button>
+
+      <!-- Result -->
+      <div id="track-result" style="margin-top:22px;display:none;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;">
+
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;">
+            <div>
+              <div style="font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.9px;font-weight:700;">Request ID</div>
+              <div style="font-size:22px;font-weight:800;font-family:'Syne',sans-serif;color:var(--heading);" id="tr-id">#—</div>
+            </div>
+            <div class="badge badge-pending" id="tr-badge">
+              <span class="badge-dot"></span>—
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-lbl">Service Type</span>
+            <span class="info-val" id="tr-service">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-lbl">Submitted At</span>
+            <span class="info-val" id="tr-time">—</span>
+          </div>
+          <div class="info-row" id="tr-provider-row" style="display:none;">
+            <span class="info-lbl">Assigned Provider</span>
+            <span class="info-val" id="tr-provider">—</span>
+          </div>
+          <div class="info-row" id="tr-completed-row" style="display:none;">
+            <span class="info-lbl">Completed At</span>
+            <span class="info-val" id="tr-completed">—</span>
+          </div>
+          <div style="font-size:13px;color:var(--muted);margin-top:10px;line-height:1.6;" id="tr-desc">—</div>
+
+          <div class="timeline" id="tr-timeline"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── CHATBOT ── -->
+<button id="chat-fab" onclick="toggleChat()" title="Chat with ServiceBot">💬</button>
+<div id="chat-window">
+  <div class="chat-header">
+    <div class="chat-header-title">🤖 ServiceBot</div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chat-input" placeholder="Ask me anything…"/>
+    <button class="chat-send" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<script src="js/theme.js"></script>
+<script src="js/emergency.js"></script>
+<script src="js/chatbot.js"></script>
+</body>
+</html>
