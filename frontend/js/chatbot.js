@@ -1,6 +1,6 @@
 /* ============================================================
-   chatbot.js  —  AI Chatbot UI — calls backend /api/chat
-   Floating chatbot available on all pages
+   chatbot.js — Calls backend /api/chat, renders HTML replies
+   iOS 26 Liquid Glass Edition
    ============================================================ */
 
 const CHATBOT_API = 'http://localhost:5000/api';
@@ -8,11 +8,9 @@ const CHATBOT_API = 'http://localhost:5000/api';
 /* ── APPEND MESSAGE ───────────────────────────────────────── */
 function appendMsg(text, sender) {
   const msgs = document.getElementById('chat-messages');
-  const div  = document.createElement('div');
+  const div = document.createElement('div');
   div.className = `msg ${sender}`;
 
-  // Bot replies contain HTML tags (<b>, <br>, etc.) from the backend
-  // so we use innerHTML for bot messages, textContent for user messages
   if (sender === 'bot') {
     div.innerHTML = text;
   } else {
@@ -26,13 +24,14 @@ function appendMsg(text, sender) {
 /* ── TYPING INDICATOR ─────────────────────────────────────── */
 function showTyping() {
   const msgs = document.getElementById('chat-messages');
-  const div  = document.createElement('div');
-  div.className = 'msg bot';
+  const div = document.createElement('div');
+  div.className = 'chat-typing';
   div.id = 'typing-indicator';
-  div.textContent = '…';
+  div.innerHTML = '<span></span><span></span><span></span>';
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
+
 function removeTyping() {
   const el = document.getElementById('typing-indicator');
   if (el) el.remove();
@@ -41,19 +40,18 @@ function removeTyping() {
 /* ── SEND MESSAGE — calls backend /api/chat ───────────────── */
 async function sendMessage() {
   const input = document.getElementById('chat-input');
-  const text  = input.value.trim();
+  const text = input.value.trim();
   if (!text) return;
 
   appendMsg(text, 'user');
   input.value = '';
-
   showTyping();
 
   try {
     const res = await fetch(`${CHATBOT_API}/chat`, {
-      method:  'POST',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ message: text })
+      body: JSON.stringify({ message: text })
     });
     const data = await res.json();
     removeTyping();
@@ -74,16 +72,19 @@ function toggleChat() {
   const win = document.getElementById('chat-window');
   const fab = document.getElementById('chat-fab');
   const isOpen = win.classList.contains('open');
+
   if (isOpen) {
     win.classList.remove('open');
-    fab.textContent = '💬';
+    fab.classList.remove('active');
+    fab.innerHTML = '<span>💬</span><span class="fab-text">Ask ServiceBot</span>';
   } else {
     win.classList.add('open');
-    fab.textContent = '✕';
-    // Show welcome message on first open
+    fab.classList.add('active');
+    fab.innerHTML = '✕';
+
     const msgs = document.getElementById('chat-messages');
     if (msgs && msgs.children.length === 0) {
-      setTimeout(() => appendMsg('👋 Hi! I\'m ServiceBot. How can I help you today? Type <b>"help"</b> to see what I can do!', 'bot'), 300);
+      setTimeout(() => appendMsg('👋 Hi! I\'m <b>ServiceBot</b>. How can I help you today? Type <b>"help"</b> to see what I can do!', 'bot'), 300);
     }
     setTimeout(() => document.getElementById('chat-input').focus(), 400);
   }

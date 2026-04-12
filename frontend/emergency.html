@@ -1,129 +1,299 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light-minimal">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Emergency Request — LSES</title>
+<title>Dashboard — LSES</title>
 <link rel="stylesheet" href="css/style.css"/>
+<script>(function(){var t=localStorage.getItem('lses_theme');if(t)document.documentElement.setAttribute('data-theme',t);else localStorage.setItem('lses_theme','light-minimal')})()</script>
 </head>
 <body>
-<div class="glow-orange"></div>
+<div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
 <div id="toast-container"></div>
 
-<!-- NAV -->
+<!-- Theme Switcher -->
+<div class="theme-switcher">
+  <button class="theme-toggle" onclick="toggleThemePicker()" title="Change Theme"><span class="theme-toggle-dot"></span></button>
+  <div class="theme-picker" id="theme-picker">
+    <button class="theme-dot" onclick="setTheme('light-minimal')" title="Light Minimal" style="background:#f5f5f5;border:2px solid rgba(0,0,0,0.15)"></button>
+    <button class="theme-dot" onclick="setTheme('noir-glass')" title="Noir Glass" style="background:linear-gradient(135deg,#0a0a0a,#333)"></button>
+    <button class="theme-dot" onclick="setTheme('arctic-light')" title="Arctic Light" style="background:#007AFF"></button>
+    <button class="theme-dot" onclick="setTheme('rose-quartz')" title="Rose Quartz" style="background:#FF2D55"></button>
+    <button class="theme-dot" onclick="setTheme('mint-fresh')" title="Mint Fresh" style="background:#30D158"></button>
+    <button class="theme-dot" onclick="setTheme('golden-hour')" title="Golden Hour" style="background:#FF9F0A"></button>
+    <button class="theme-dot" onclick="setTheme('lavender-mist')" title="Lavender Mist" style="background:#BF5AF2"></button>
+    <button class="theme-dot" onclick="setTheme('pearl-white')" title="Pearl White" style="background:#5AC8FA"></button>
+    <button class="theme-dot" onclick="setTheme('midnight-pro')" title="Midnight Pro" style="background:linear-gradient(135deg,#0a0a0f,#0A84FF)"></button>
+    <button class="theme-dot" onclick="setTheme('space-indigo')" title="Space Indigo" style="background:linear-gradient(135deg,#0d0d1a,#5E5CE6)"></button>
+    <button class="theme-dot" onclick="setTheme('crystal-clear')" title="Crystal Clear" style="background:linear-gradient(135deg,#e8efff,#f5e8ff,#e8fff5)"></button>
+  </div>
+</div>
+
+<!-- Navbar -->
 <nav class="navbar">
-  <a href="index.html" class="logo">LS<span>E</span>S</a>
+  <a href="index.html" class="logo"><span class="logo-icon">⚡</span> LS<span>E</span>S</a>
   <div class="nav-links">
     <div class="user-chip">
       <div class="user-avatar" id="user-avatar">U</div>
-      <span id="user-name-display">User</span>
+      <span class="user-name" id="user-name-display">User</span>
       <button class="logout-btn" onclick="logout()">Sign out</button>
     </div>
   </div>
 </nav>
 
-<!-- MAIN -->
-<div class="page">
-  <div class="page-header">
-    <div class="page-title">Emergency <span>Dashboard</span></div>
-    <div class="page-sub">Submit a new service request or track your existing one in real-time.</div>
-  </div>
+<!-- Main Content -->
+<div class="page-wrap">
+  <div class="container">
+    <div class="page-header anim-up">
+      <div class="page-title">Service <span>Dashboard</span></div>
+      <div class="page-sub">Browse providers, book services, and track your requests.</div>
+    </div>
 
-  <div class="grid-2">
+    <!-- ── TAB NAVIGATION ── -->
+    <div class="dash-tabs anim-up anim-up-1">
+      <button class="dash-tab active" onclick="switchDashTab('providers')" id="dtab-providers">🔍 Find Providers</button>
+      <button class="dash-tab" onclick="switchDashTab('booking')" id="dtab-booking">📋 Book Service</button>
+      <button class="dash-tab" onclick="switchDashTab('history')" id="dtab-history">📜 My Bookings</button>
+      <button class="dash-tab" onclick="switchDashTab('track')" id="dtab-track">📍 Track</button>
+    </div>
 
-    <!-- ── RAISE REQUEST ── -->
-    <div class="card">
-      <div class="card-title">
-        <div class="card-icon">🚨</div>
-        Raise Emergency Request
-      </div>
+    <!-- ══════ PROVIDERS TAB ══════ -->
+    <div class="dash-panel active" id="dpanel-providers">
+      <div class="glass glass-pad anim-up anim-up-2">
+        <div class="card-title">
+          <div class="card-icon">🔍</div>
+          Browse Service Providers
+        </div>
 
-      <div class="form-group">
-        <label>Your Name</label>
-        <input type="text" id="req-name" placeholder="Full name"/>
-      </div>
-      <div class="form-group">
-        <label>Phone Number</label>
-        <input type="tel" id="req-phone" placeholder="10-digit mobile number" maxlength="10"/>
-      </div>
-      <div class="form-group">
-        <label>Service Type</label>
-        <select id="req-service">
-          <option value="">— Select service needed —</option>
-          <option value="Plumber">🔧 Plumber</option>
-          <option value="Electrician">⚡ Electrician</option>
-          <option value="Mechanic">🔩 Mechanic</option>
-          <option value="AC Repair">❄️ AC Repair</option>
-          <option value="Carpenter">🚪 Carpenter</option>
-          <option value="Handyman">🏠 Handyman</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Problem Description</label>
-        <textarea id="req-desc" placeholder="Briefly describe the issue — e.g. water pipe burst in kitchen, no power in 2 rooms…"></textarea>
-      </div>
-      <button class="btn btn-orange btn-full btn-lg" id="btn-submit" onclick="submitRequest()">
-        🚨 Submit Emergency Request
-      </button>
+        <!-- Filters -->
+        <div class="filter-bar">
+          <div class="form-field" style="margin-bottom:0;flex:1;min-width:160px">
+            <select id="filter-service" onchange="loadProviders()">
+              <option value="">All Services</option>
+              <option value="Plumber">🔧 Plumber</option>
+              <option value="Electrician">⚡ Electrician</option>
+              <option value="Mechanic">🔩 Mechanic</option>
+              <option value="AC Repair">❄️ AC Repair</option>
+              <option value="Carpenter">🚪 Carpenter</option>
+              <option value="Handyman">🏠 Handyman</option>
+            </select>
+            <label>Filter by Service</label>
+          </div>
+          <div class="form-field" style="margin-bottom:0;flex:1;min-width:120px">
+            <select id="filter-sort" onchange="loadProviders()">
+              <option value="nearest">📍 Nearest First</option>
+              <option value="price">💰 Lowest Price</option>
+              <option value="rating">⭐ Highest Rating</option>
+            </select>
+            <label>Sort By</label>
+          </div>
+          <div class="form-field" style="margin-bottom:0;flex:1;min-width:120px">
+            <input type="number" id="filter-max-price" placeholder=" " onchange="loadProviders()" min="0"/>
+            <label>Max Price (₹)</label>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="detectUserLocation()" title="Detect my location">📍 My Location</button>
+        </div>
 
-      <div style="margin-top:16px;padding:12px;background:rgba(255,214,0,.07);border:1px solid rgba(255,214,0,.2);border-radius:8px;font-size:13px;color:var(--yellow);">
-        ⚠️ One active request allowed at a time. Previous request must be completed first.
+        <div id="location-info" style="font-size:12px;color:var(--text-3);margin:8px 0"></div>
+
+        <!-- Provider Cards -->
+        <div id="provider-list" class="provider-results" style="margin-top:16px">
+          <div class="empty-state">
+            <div class="empty-icon">⏳</div>
+            <div class="empty-title">Loading providers…</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ── TRACK REQUEST ── -->
-    <div class="card blue-top">
-      <div class="card-title">
-        <div class="card-icon blue-icon">📍</div>
-        Track Your Request
-      </div>
+    <!-- ══════ BOOKING TAB ══════ -->
+    <div class="dash-panel" id="dpanel-booking">
+      <div class="booking-shell">
+        <!-- Booking Form -->
+        <div class="glass glass-pad anim-up anim-up-1">
+          <div class="card-title">
+            <div class="card-icon">📋</div>
+            Book a Service
+          </div>
 
-      <p style="font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.6;">
-        Enter your registered phone number to see the live status of your latest emergency request.
-      </p>
-
-      <div class="form-group">
-        <label>Phone Number</label>
-        <input type="tel" id="track-phone" class="blue-focus" placeholder="Your 10-digit number" maxlength="10"/>
-      </div>
-      <button class="btn btn-ghost blue-ghost btn-full btn-lg" id="btn-track" onclick="trackRequest()">
-        🔍 Track Status
-      </button>
-
-      <!-- Result -->
-      <div id="track-result" style="margin-top:22px;display:none;">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;">
-
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
-            <div>
-              <div style="font-size:12px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;">Request ID</div>
-              <div style="font-size:20px;font-weight:700;" id="tr-id">#—</div>
-            </div>
-            <div class="badge badge-pending" id="tr-badge">
-              <span class="badge-dot"></span>—
+          <!-- Selected Provider Preview -->
+          <div id="selected-provider-card" style="display:none;margin-bottom:20px">
+            <div class="selected-provider-card glass-sm" style="padding:16px;border-radius:var(--radius-md);background:var(--input-bg);border:2px solid var(--accent)">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+                <div id="sel-prov-avatar" style="width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;overflow:hidden">P</div>
+                <div>
+                  <div id="sel-prov-name" style="font-weight:700;font-size:16px;color:var(--text-1)">—</div>
+                  <div id="sel-prov-meta" style="font-size:13px;color:var(--text-3)">—</div>
+                </div>
+                <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="clearSelectedProvider()">✕ Change</button>
+              </div>
             </div>
           </div>
+          <div id="no-provider-msg" class="warning-box" style="margin-bottom:20px">
+            ⚠️ Please select a provider from the "Find Providers" tab first.
+          </div>
 
-          <div class="info-row">
-            <span class="info-lbl">Service Type</span>
-            <span class="info-val" id="tr-service">—</span>
+          <div class="form-row">
+            <div class="form-field">
+              <input type="text" id="book-name" placeholder=" "/>
+              <label>Your Name</label>
+            </div>
+            <div class="form-field">
+              <input type="tel" id="book-phone" placeholder=" " maxlength="10"/>
+              <label>Phone Number</label>
+            </div>
           </div>
-          <div class="info-row">
-            <span class="info-lbl">Submitted At</span>
-            <span class="info-val" id="tr-time">—</span>
+          <div class="form-field">
+            <input type="text" id="book-address" placeholder=" "/>
+            <label>Service Address</label>
           </div>
-          <div class="info-row" id="tr-provider-row" style="display:none;">
-            <span class="info-lbl">Assigned Provider</span>
-            <span class="info-val" id="tr-provider">—</span>
+          <div class="location-panel compact-panel" style="margin-bottom:16px">
+            <span id="book-location-status" style="font-size:12px">Detect your location for better matching</span>
+            <button class="btn btn-ghost btn-sm" type="button" onclick="detectBookingLocation()">📍 Detect</button>
           </div>
-          <div class="info-row" id="tr-completed-row" style="display:none;">
-            <span class="info-lbl">Completed At</span>
-            <span class="info-val" id="tr-completed">—</span>
+          <div class="form-row">
+            <div class="form-field">
+              <input type="date" id="book-date" placeholder=" "/>
+              <label>Preferred Date</label>
+            </div>
+            <div class="form-field">
+              <input type="time" id="book-time" placeholder=" "/>
+              <label>Preferred Time</label>
+            </div>
           </div>
-          <div style="font-size:13px;color:var(--muted);margin-top:10px;line-height:1.5;" id="tr-desc">—</div>
+          <div class="form-field">
+            <textarea id="book-desc" placeholder=" "></textarea>
+            <label>Describe the problem</label>
+          </div>
 
-          <!-- Timeline -->
-          <div class="timeline" id="tr-timeline"></div>
+          <!-- Payment Method -->
+          <div style="margin-bottom:20px">
+            <label style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:10px">Payment Method</label>
+            <div class="chip-grid">
+              <button type="button" class="service-chip selected" data-value="CASH" onclick="selectPaymentMethod(this)"><span class="chip-icon">💵</span> Cash on Service</button>
+              <button type="button" class="service-chip" data-value="ONLINE" onclick="selectPaymentMethod(this)"><span class="chip-icon">💳</span> Online Payment</button>
+            </div>
+          </div>
+
+          <button class="btn btn-emergency btn-full btn-lg" id="btn-book" onclick="submitBooking()" disabled>
+            🚀 Confirm Booking
+          </button>
+        </div>
+
+        <!-- Payment Summary -->
+        <div class="booking-side">
+          <div class="glass glass-pad anim-up anim-up-2">
+            <div class="card-title">
+              <div class="card-icon" style="background:rgba(48,209,88,0.12)">💰</div>
+              Payment Summary
+            </div>
+            <div class="amount-breakdown">
+              <div class="info-row"><span class="info-lbl">Service Charge</span><span class="info-val" id="pay-service">₹0</span></div>
+              <div class="info-row"><span class="info-lbl">Platform Fee</span><span class="info-val" id="pay-platform">₹49</span></div>
+              <div class="info-row" style="border-bottom:none"><span class="info-lbl" style="font-weight:700;color:var(--text-1)">Total Amount</span><span class="info-val total-amount" id="pay-total" style="color:var(--accent);font-weight:800">₹0</span></div>
+            </div>
+            <div class="booking-note" id="pay-note">
+              💡 Select a provider to see the payment breakdown.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ HISTORY TAB ══════ -->
+    <div class="dash-panel" id="dpanel-history">
+      <div class="glass glass-pad anim-up anim-up-1">
+        <div class="card-title">
+          <div class="card-icon" style="background:rgba(90,200,250,0.12)">📜</div>
+          My Booking History
+        </div>
+        <div id="user-history" class="history-list">
+          <div class="empty-state-inline">Loading booking history…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ TRACK TAB ══════ -->
+    <div class="dash-panel" id="dpanel-track">
+      <div class="grid-2">
+        <!-- Track Card -->
+        <div class="glass glass-pad anim-up anim-up-1">
+          <div class="card-title">
+            <div class="card-icon" style="background:rgba(90,200,250,0.12)">📍</div>
+            Track Your Request
+          </div>
+          <p style="font-size:14px;color:var(--text-2);margin-bottom:20px;line-height:1.6">
+            Enter your registered phone number to see the live status of your latest booking.
+          </p>
+          <div class="form-field">
+            <input type="tel" id="track-phone" placeholder=" " maxlength="10"/>
+            <label>Phone Number</label>
+          </div>
+          <button class="btn btn-ghost btn-full btn-lg" id="btn-track" onclick="trackRequest()">
+            🔍 Track Status
+          </button>
+
+          <!-- Track Result -->
+          <div id="track-result" style="margin-top:24px;display:none">
+            <div class="glass glass-sm track-result" style="background:var(--input-bg)">
+              <div class="track-header">
+                <div>
+                  <div class="track-id-label">Request ID</div>
+                  <div class="track-id" id="tr-id">#—</div>
+                </div>
+                <div class="badge badge-pending" id="tr-badge">
+                  <span class="badge-dot"></span>—
+                </div>
+              </div>
+
+              <div class="info-row">
+                <span class="info-lbl">Service Type</span>
+                <span class="info-val" id="tr-service">—</span>
+              </div>
+              <div class="info-row">
+                <span class="info-lbl">Submitted At</span>
+                <span class="info-val" id="tr-time">—</span>
+              </div>
+              <div class="info-row">
+                <span class="info-lbl">Payment</span>
+                <span class="info-val" id="tr-payment">—</span>
+              </div>
+              <div class="info-row" id="tr-provider-row" style="display:none">
+                <span class="info-lbl">Assigned Provider</span>
+                <span class="info-val" id="tr-provider">—</span>
+              </div>
+              <div class="info-row" id="tr-completed-row" style="display:none">
+                <span class="info-lbl">Completed At</span>
+                <span class="info-val" id="tr-completed">—</span>
+              </div>
+              <div style="font-size:13px;color:var(--text-3);margin-top:12px;line-height:1.5;padding:12px;background:var(--glass);border-radius:var(--radius-xs)" id="tr-desc">—</div>
+
+              <!-- Timeline -->
+              <div class="timeline" id="tr-timeline"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Info Card -->
+        <div class="glass glass-pad anim-up anim-up-2">
+          <div class="card-title">
+            <div class="card-icon">ℹ️</div>
+            How It Works
+          </div>
+          <div class="timeline">
+            <div class="tl-step">
+              <div class="tl-dot done"></div>
+              <div class="tl-content"><div class="tl-lbl">Browse Providers</div><div class="tl-sub">Find the right service provider near you</div></div>
+            </div>
+            <div class="tl-step">
+              <div class="tl-dot done"></div>
+              <div class="tl-content"><div class="tl-lbl">Book Service</div><div class="tl-sub">Select provider, schedule time, and confirm</div></div>
+            </div>
+            <div class="tl-step">
+              <div class="tl-dot active"></div>
+              <div class="tl-content"><div class="tl-lbl">Pay & Get Service</div><div class="tl-sub">Pay online or cash. Provider arrives at your door</div></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -131,11 +301,11 @@
   </div>
 </div>
 
-<!-- CHATBOT -->
-<button id="chat-fab" onclick="toggleChat()" title="Need help? Chat with ServiceBot">💬</button>
+<!-- Chatbot -->
+<button id="chat-fab" onclick="toggleChat()"><span>💬</span><span class="fab-text">Ask ServiceBot</span></button>
 <div id="chat-window">
   <div class="chat-header">
-    <div class="chat-header-title">🤖 ServiceBot</div>
+    <div class="chat-header-title"><span class="chat-status"></span> ServiceBot</div>
     <button class="chat-close" onclick="toggleChat()">✕</button>
   </div>
   <div class="chat-messages" id="chat-messages"></div>
@@ -147,5 +317,10 @@
 
 <script src="js/emergency.js"></script>
 <script src="js/chatbot.js"></script>
+<script>
+function toggleThemePicker(){document.getElementById('theme-picker').classList.toggle('open')}
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('lses_theme',t);document.getElementById('theme-picker').classList.remove('open')}
+document.addEventListener('click',e=>{if(!e.target.closest('.theme-switcher'))document.getElementById('theme-picker').classList.remove('open')});
+</script>
 </body>
 </html>
