@@ -3,7 +3,7 @@
    iOS 26 Liquid Glass Edition — Enhanced with full profile
    ============================================================ */
 
-const API = "http://localhost:5000/api";
+const API = "https://local-service-rvpo.onrender.com/api";
 
 let registerLocation = { latitude: null, longitude: null };
 

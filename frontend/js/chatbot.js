@@ -3,7 +3,7 @@
    iOS 26 Liquid Glass Edition
    ============================================================ */
 
-const CHATBOT_API = 'http://localhost:5000/api';
+const CHATBOT_API = 'https://local-service-rvpo.onrender.com/api';
 
 /* ── APPEND MESSAGE ───────────────────────────────────────── */
 function appendMsg(text, sender) {

@@ -3,7 +3,7 @@
    Handles login/register, dashboard stats, job board, history
    ============================================================ */
 
-const API = 'http://localhost:5000/api';
+const API = 'https://local-service-rvpo.onrender.com/api';
 
 let provider = null;
 let activeJobId = null;
