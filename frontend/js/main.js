@@ -57,13 +57,18 @@ function captureUserLocation() {
 /* ── Photo Preview ─────────────────────────────────────────── */
 function previewPhoto(input, previewId) {
   const preview = document.getElementById(previewId);
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = e => {
-      preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
-    };
-    reader.readAsDataURL(input.files[0]);
+  if (!input.files || !input.files[0]) return;
+  // 5MB limit
+  if (input.files[0].size > 5 * 1024 * 1024) {
+    showToast('Image is too large. Max 5MB allowed.', 'error');
+    input.value = '';
+    return;
   }
+  const reader = new FileReader();
+  reader.onload = e => {
+    preview.innerHTML = `<img src="${e.target.result}" alt="Profile photo preview"/>`;
+  };
+  reader.readAsDataURL(input.files[0]);
 }
 
 /* ── Upload Photo ──────────────────────────────────────────── */
@@ -84,60 +89,100 @@ async function uploadPhoto(fileInput) {
 
 /* ── Register ──────────────────────────────────────────────── */
 async function doRegister() {
-  const name = document.getElementById("reg-name").value.trim();
-  const email = document.getElementById("reg-email").value.trim();
+  const name     = document.getElementById("reg-name").value.trim();
+  const email    = document.getElementById("reg-email").value.trim();
   const password = document.getElementById("reg-password").value;
-  const phone = document.getElementById("reg-phone").value.trim();
-  const address = document.getElementById("reg-address").value.trim();
+  const phone    = document.getElementById("reg-phone").value.trim();
+  const address  = document.getElementById("reg-address").value.trim();
 
-  if (!name || !email || !password) return showToast("Name, email and password are required.", "error");
-  if (password.length < 6) return showToast("Password must be at least 6 characters", "error");
+  if (!name || !email || !password) {
+    return showToast("Name, email and password are required.", "error");
+  }
+  if (password.length < 6) {
+    return showToast("Password must be at least 6 characters.", "error");
+  }
+  if (phone && !/^\d{10}$/.test(phone)) {
+    return showToast("Enter a valid 10-digit phone number.", "error");
+  }
 
   const btn = document.getElementById("btn-register");
-  btn.disabled = true; btn.textContent = "Creating account…";
+  // Save original label if not already saved
+  if (!btn.dataset.label) btn.dataset.label = btn.textContent.trim();
+  btn.disabled = true;
+  btn.classList.add('btn-loading');
+  btn.textContent = "Creating account\u2026";
 
   try {
     // Upload photo first if selected
     const photoUrl = await uploadPhoto(document.getElementById("reg-photo"));
 
     const res = await fetch(API + "/user/register", {
-      method: "POST", headers: { "Content-Type": "application/json" },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name, email, password, phone, address,
-        latitude: registerLocation.latitude,
+        latitude:  registerLocation.latitude,
         longitude: registerLocation.longitude,
         profile_photo: photoUrl
       })
     });
-    const data = await res.json();
+
+    let data;
+    try { data = await res.json(); }
+    catch { throw new Error('Invalid server response.'); }
+
     if (data.success) {
-      showToast("Account created! Please sign in.");
-      setTimeout(() => switchTab("login"), 1000);
-    } else showToast(data.message, "error");
-  } catch { showToast("Cannot connect to server. Is Flask running?", "error"); }
-  finally { btn.disabled = false; btn.textContent = "Create Account →"; }
+      showToast("\u2705 Account created! Please sign in.", "success");
+      setTimeout(() => switchTab("login"), 1200);
+    } else {
+      showToast(data.message || "Registration failed.", "error");
+    }
+  } catch (err) {
+    showToast(err.message || "Cannot connect to server.", "error");
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('btn-loading');
+    btn.textContent = btn.dataset.label || "Create Account \u2192";
+  }
 }
 
 /* ── Login ─────────────────────────────────────────────────── */
 async function doLogin() {
-  const email = document.getElementById("login-email").value.trim();
+  const email    = document.getElementById("login-email").value.trim();
   const password = document.getElementById("login-password").value;
-  if (!email || !password) return showToast("Please fill all fields", "error");
+  if (!email || !password) return showToast("Please fill all fields.", "error");
+
   const btn = document.getElementById("btn-login");
-  btn.disabled = true; btn.textContent = "Signing in…";
+  if (!btn.dataset.label) btn.dataset.label = btn.textContent.trim();
+  btn.disabled = true;
+  btn.classList.add('btn-loading');
+  btn.textContent = "Signing in\u2026";
+
   try {
     const res = await fetch(API + "/user/login", {
-      method: "POST", headers: { "Content-Type": "application/json" },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     });
-    const data = await res.json();
+
+    let data;
+    try { data = await res.json(); }
+    catch { throw new Error('Invalid server response.'); }
+
     if (data.success) {
       localStorage.setItem("lses_user", JSON.stringify(data.user));
-      showToast("Welcome back, " + data.user.name + "! Redirecting…");
+      showToast("\u2705 Welcome back, " + data.user.name + "! Redirecting\u2026");
       setTimeout(() => (location.href = "emergency.html"), 900);
-    } else showToast(data.message, "error");
-  } catch { showToast("Cannot connect to server. Is Flask running?", "error"); }
-  finally { btn.disabled = false; btn.textContent = "Sign In →"; }
+    } else {
+      showToast(data.message || "Login failed.", "error");
+    }
+  } catch (err) {
+    showToast(err.message || "Cannot connect to server.", "error");
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('btn-loading');
+    btn.textContent = btn.dataset.label || "Sign In \u2192";
+  }
 }
 
 document.addEventListener("keydown", e => {

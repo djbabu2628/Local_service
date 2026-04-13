@@ -30,9 +30,15 @@ function showToast(msg, type = 'success') {
 function setButtonState(id, loading, text) {
   const btn = document.getElementById(id);
   if (!btn) return;
-  if (!btn.dataset.label) btn.dataset.label = btn.textContent;
+  if (!btn.dataset.label) btn.dataset.label = btn.textContent.trim();
   btn.disabled = loading;
-  btn.textContent = loading ? text : btn.dataset.label;
+  if (loading) {
+    btn.classList.add('btn-loading');
+    btn.textContent = text || 'Loading…';
+  } else {
+    btn.classList.remove('btn-loading');
+    btn.textContent = btn.dataset.label;
+  }
 }
 
 function formatCurrency(amount) {
@@ -75,10 +81,15 @@ function captureProviderLocation(target) {
 /* ── Photo Upload ─────────────────────────────────────────── */
 async function uploadPhoto(fileInput) {
   if (!fileInput || !fileInput.files || !fileInput.files[0]) return '';
+  // Limit to 5MB
+  if (fileInput.files[0].size > 5 * 1024 * 1024) {
+    showToast('Image exceeds 5MB limit. Using no photo.', 'info');
+    return '';
+  }
   const formData = new FormData();
   formData.append('file', fileInput.files[0]);
   try {
-    const res = await fetch(API.replace('/api', '') + '/api/upload', { method: 'POST', body: formData });
+    const res = await fetch(`${API}/upload`, { method: 'POST', body: formData });
     const data = await res.json();
     if (data.success) return data.url;
     showToast(data.message || 'Photo upload failed.', 'error');
@@ -131,15 +142,17 @@ async function doProviderLogin() {
   const password = document.getElementById('p-login-password').value;
   if (!email || !password) { showToast('Please fill all login fields.', 'error'); return; }
 
-  setButtonState('btn-p-login', true, 'Signing in...');
+  setButtonState('btn-p-login', true, 'Signing in…');
   try {
     const res = await fetch(`${API}/provider/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
-    const data = await res.json();
-    if (!data.success) { showToast(data.message, 'error'); return; }
+    let data;
+    try { data = await res.json(); }
+    catch { throw new Error('Invalid server response.'); }
+    if (!data.success) { showToast(data.message || 'Login failed.', 'error'); return; }
 
     provider = data.provider;
     localStorage.setItem('lses_provider', JSON.stringify(provider));

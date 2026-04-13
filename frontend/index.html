@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="description" content="LSES — Local Service Emergency System. Get instant help from verified local technicians."/>
+<meta name="theme-color" content="#111111"/>
 <title>LSES — Local Service Emergency System</title>
 <link rel="stylesheet" href="css/style.css"/>
 <script>
@@ -79,7 +80,7 @@
           <label>Password</label>
         </div>
         <button class="btn btn-accent btn-full btn-lg" id="btn-login" onclick="doLogin()">Sign In →</button>
-        <p style="text-align:center;margin-top:16px;font-size:13px;color:var(--text-3)">
+        <p style="text-align:center;margin-top:14px;font-size:13px;color:var(--text-3)">
           No account? <a href="#" onclick="switchTab('register')" style="color:var(--accent);font-weight:600">Create one →</a>
         </p>
       </div>
@@ -110,10 +111,14 @@
         </div>
         <!-- Profile Photo Upload -->
         <div style="margin-bottom:16px">
-          <label style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">Profile Photo</label>
-          <div style="display:flex;align-items:center;gap:12px">
-            <div id="reg-photo-preview" style="width:48px;height:48px;border-radius:50%;background:var(--input-bg);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:20px;color:var(--text-3)">👤</div>
-            <input type="file" id="reg-photo" accept="image/*" onchange="previewPhoto(this, 'reg-photo-preview')" style="font-size:13px;color:var(--text-2)"/>
+          <label class="photo-upload-label">Profile Photo</label>
+          <div class="photo-upload-wrap" onclick="document.getElementById('reg-photo').click()">
+            <div class="photo-avatar" id="reg-photo-preview">👤</div>
+            <div class="photo-upload-info">
+              <span class="photo-upload-btn">📷 Upload Photo</span>
+              <p>JPG, PNG or GIF · Max 5MB</p>
+            </div>
+            <input type="file" id="reg-photo" class="photo-upload-input" accept="image/*" onchange="previewPhoto(this, 'reg-photo-preview')"/>
           </div>
         </div>
         <div class="form-field">
